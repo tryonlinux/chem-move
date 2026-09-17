@@ -378,47 +378,113 @@
     return { key, steps, cost: end.cost };
   }
 
-  // A compound the line doesn't already spell, that it can build from the
-  // board, preferring ones no other line is asking for and never more than
-  // MAX_REPEAT lines on the same one. When dealing (strict), returns null if
-  // none fits, so the board is dealt again. Mid-game it falls back to an unused
-  // one that becomes buildable as other lines refresh or the player shuffles.
-  const MAX_REPEAT = 2;
-  function reachableTarget(g, key, rng, strict = false) {
+  // A compound for a made line to ask for next: one no other line is using,
+  // buildable from the board if possible, otherwise one that becomes buildable
+  // as other lines refresh or the player shuffles.
+  function reachableTarget(g, key, rng) {
     const n = g.n;
-    const uses = {};
-    for (const k of lineKeys(n)) if (k !== key) uses[targetOf(g, k)] = (uses[targetOf(g, k)] || 0) + 1;
-    const fresh = [];
-    const repeat = [];
-    for (const m of molsFor(n)) {
-      if ((uses[m.id] || 0) >= MAX_REPEAT) continue;
+    const taken = new Set(lineKeys(n).filter((k) => k !== key).map((k) => targetOf(g, k)));
+    const unused = molsFor(n).filter((m) => !taken.has(m.id) && !lineHas(g, key, m));
+    const options = [];
+    for (const m of unused) {
       const plan = planFor(g, key, m);
-      if (plan && plan.cost) (uses[m.id] ? repeat : fresh).push({ m, cost: plan.cost });
+      if (plan) options.push({ m, cost: plan.cost });
     }
-    const options = fresh.length ? fresh : repeat;
     if (options.length) {
       const near = options.filter((o) => o.cost <= n + 1);
       if (near.length) return pick(rng, near).m.id;
       options.sort((a, b) => a.cost - b.cost || (a.m.id < b.m.id ? -1 : 1));
       return pick(rng, options.slice(0, 3)).m.id;
     }
-    if (strict) return null;
-    const unused = molsFor(n).filter((m) => !uses[m.id] && !lineHas(g, key, m));
     return pick(rng, unused.length ? unused : molsFor(n)).id;
   }
 
-  // Every dealt target must be buildable from the board, so redeal the rare
-  // (mostly 3×3) boards where some line has nothing within reach.
-  const DEAL_TRIES = 200;
+  function shuffled(rng, arr) {
+    const out = arr.slice();
+    for (let i = out.length - 1; i > 0; i--) {
+      const j = randInt(rng, 0, i);
+      [out[i], out[j]] = [out[j], out[i]];
+    }
+    return out;
+  }
+
+  // Give as many lines as possible a different compound from their lists
+  // (augmenting paths). Earlier entries in a list are preferred.
+  function matchLines(choices) {
+    const owner = new Map();
+    const place = (i, seen) => {
+      for (const id of choices[i]) {
+        if (seen.has(id)) continue;
+        seen.add(id);
+        if (!owner.has(id) || place(owner.get(id), seen)) {
+          owner.set(id, i);
+          return true;
+        }
+      }
+      return false;
+    };
+    for (let i = 0; i < choices.length; i++) place(i, new Set());
+    const out = choices.map(() => null);
+    for (const [id, i] of owner) out[i] = id;
+    return { out, size: owner.size };
+  }
+
+  // Scatter compound m's atoms (and the blanks around it) into the lines
+  // crossing `key`, so sliding them in builds m there.
+  function plant(g, key, m, rng) {
+    const n = g.n;
+    const i = Number(key.slice(1));
+    const cell = key[0] === 'r' ? (line, pos) => line * n + pos : (line, pos) => pos * n + line;
+    const offset = randInt(rng, 0, n - m.size);
+    const other = () => {
+      const j = randInt(rng, 0, n - 2);
+      return j >= i ? j + 1 : j;
+    };
+    for (let pos = 0; pos < n; pos++) {
+      const want = pos >= offset && pos < offset + m.size ? m.seq[pos - offset] : BLANK;
+      if (g.v[cell(i, pos)] !== want) g.v[cell(other(), pos)] = want;
+    }
+  }
+
+  // Deal tiles, then give every line its own compound that it can build from
+  // them, nearby ones first. Lines left without one get a compound planted
+  // around them; boards that still can't be matched are dealt again.
+  const DEAL_TRIES = 20;
+  const REPAIRS = 60;
   function deal(g, rng) {
+    const n = g.n;
+    const keys = lineKeys(n);
+    const mols = molsFor(n);
+    const options = () => keys.map((key) => {
+      const near = [];
+      const far = [];
+      for (const m of mols) {
+        const plan = planFor(g, key, m);
+        if (plan && plan.cost) (plan.cost <= n + 1 ? near : far).push(m.id);
+      }
+      return [...shuffled(rng, near), ...shuffled(rng, far)];
+    });
     for (let t = 1; ; t++) {
-      const strict = t < DEAL_TRIES;
-      g.v = range(g.n * g.n).map(() => randomAtom(rng, g.n));
+      g.v = range(n * n).map(() => randomAtom(rng, n));
       g.rows = [];
       g.cols = [];
-      for (let i = 0; i < g.n; i++) g.rows[i] = reachableTarget(g, `r${i}`, rng, strict);
-      for (let i = 0; i < g.n; i++) g.cols[i] = reachableTarget(g, `c${i}`, rng, strict);
-      if ([...g.rows, ...g.cols].every(Boolean)) return;
+      let best = matchLines(options());
+      for (let step = 0; best.size < keys.length && step < REPAIRS; step++) {
+        const saved = g.v.slice();
+        const open = keys.filter((_, i) => !best.out[i]);
+        const key = pick(rng, open);
+        const used = new Set(best.out);
+        const spare = mols.filter((m) => !used.has(m.id) && !lineHas(g, key, m));
+        plant(g, key, pick(rng, spare), rng);
+        const next = matchLines(options());
+        if (next.size >= best.size) best = next;
+        else g.v = saved;
+      }
+      if (best.size === keys.length || t >= DEAL_TRIES) {
+        keys.forEach((key, i) => { if (best.out[i]) setTarget(g, key, best.out[i]); });
+        keys.forEach((key, i) => { if (!best.out[i]) setTarget(g, key, reachableTarget(g, key, rng)); });
+        return;
+      }
     }
   }
 
