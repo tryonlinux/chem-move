@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>ChemMove — a daily atom-swapping chemistry puzzle</title>
-  <meta name="description" content="Swap neighbouring atoms until a row or column holds exactly the compound named beside it. Make water, rust, laughing gas and more, chain reactions for combos, and fill your lab notebook. A new ChemMove puzzle every day.">
+  <meta name="description" content="Swap neighbouring atoms until a row or column spells the formula of the compound named beside it, in order. Make water, rust, laughing gas and more, chain reactions for combos, and fill your lab notebook. A new ChemMove puzzle every day.">
   <meta name="theme-color" content="#eef3ef" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#0e1614" media="(prefers-color-scheme: dark)">
   <link rel="canonical" href="https://chemmove.tryonlinux.com/">
@@ -36,7 +36,7 @@
     "name": "ChemMove",
     "url": "https://chemmove.tryonlinux.com/",
     "image": "https://chemmove.tryonlinux.com/og-image.png",
-    "description": "A chemistry puzzle. Swap neighbouring atoms on a grid until a row or column holds exactly the atoms of the compound named beside it, like water (H₂O) or rust (Fe₂O₃), with blank tiles filling the rest. Completed lines refresh and score points; make several with one swap for a combo. A new daily puzzle for everyone, plus random games from 3×3 to 10×10.",
+    "description": "A chemistry puzzle. Swap neighbouring atoms on a grid until a row or column spells the formula of the compound named beside it in order, like water (H₂O) or rust (Fe₂O₃), with blank tiles before or after it. Completed lines refresh and score points; make several with one swap for a combo. A new daily puzzle for everyone, plus random games from 3×3 to 10×10.",
     "genre": ["Puzzle", "Educational"],
     "applicationCategory": "Game",
     "gamePlatform": "Web browser",
@@ -139,21 +139,21 @@
       <div class="demo" aria-hidden="true">
         <div class="demo-grid">
           <span class="d-hdr"></span><span class="d-hdr">🎈<small>Hydrogen</small></span><span class="d-hdr">🫁<small>Oxygen</small></span><span class="d-hdr">🍽️<small>Stomach acid</small></span>
-          <span class="d-hdr">💧<small>Water</small></span><span class="d-tile el-h">H</span><span class="d-tile el-o">O</span><span class="d-tile el-ca d-sel">Ca</span>
-          <span class="d-hdr">🔥<small>Quicklime</small></span><span class="d-tile el-o">O</span><span class="d-tile d-blank"></span><span class="d-tile el-h">H</span>
+          <span class="d-hdr">💧<small>Water</small></span><span class="d-tile el-h">H</span><span class="d-tile el-o d-sel">O</span><span class="d-tile el-o">O</span>
+          <span class="d-hdr">🔥<small>Quicklime</small></span><span class="d-tile el-ca">Ca</span><span class="d-tile el-h">H</span><span class="d-tile d-blank"></span>
         </div>
         <div class="demo-arrow">→</div>
         <div class="demo-grid">
           <span class="d-hdr"></span><span class="d-hdr">🎈<small>Hydrogen</small></span><span class="d-hdr">🫁<small>Oxygen</small></span><span class="d-hdr">🍽️<small>Stomach acid</small></span>
-          <span class="d-hdr d-hit">💧<small>Water</small></span><span class="d-tile el-h d-hit">H</span><span class="d-tile el-o d-hit">O</span><span class="d-tile el-h d-hit">H</span>
-          <span class="d-hdr d-hit">🔥<small>Quicklime</small></span><span class="d-tile el-o d-hit">O</span><span class="d-tile d-blank d-hit"></span><span class="d-tile el-ca d-hit">Ca</span>
+          <span class="d-hdr d-hit">💧<small>Water</small></span><span class="d-tile el-h d-hit">H</span><span class="d-tile el-h d-hit">H</span><span class="d-tile el-o d-hit">O</span>
+          <span class="d-hdr d-hit">🔥<small>Quicklime</small></span><span class="d-tile el-ca d-hit">Ca</span><span class="d-tile el-o d-hit">O</span><span class="d-tile d-blank d-hit"></span>
         </div>
       </div>
-      <p class="demo-cap muted small">Water is H₂O and quicklime is CaO. Swapping the Ca down for the H makes both at once: a combo.</p>
+      <p class="demo-cap muted small">Water (H₂O) must read H H O, and quicklime (CaO) Ca then O. Swapping the middle O down for the H makes both at once: a combo.</p>
       <ol class="steps">
         <li>Each row has a compound on the <b>left</b> and each column one on <b>top</b>, by its common name. The formula is up to you. Tap a name for a clue: how many atoms it has and a fact about it.</li>
         <li>Tap a tile, then tap a tile <b>next to it</b> (left, right, up or down) to swap them. You can also swipe a tile toward its neighbour.</li>
-        <li>A line is <b>made</b> when its atoms match the formula exactly, in any order. <b>Blank</b> tiles fill the leftover cells, so a 3-atom compound on a 5×5 board needs two blanks in its line. You score, the line fills with new tiles and it gets a new compound.</li>
+        <li>A line is <b>made</b> when it spells the formula <b>in order</b>, left to right in a row and top to bottom in a column, as one unbroken run: water (H₂O) is H H O, not H O H. Brackets repeat, so Ca(OH)₂ is Ca O H O H. <b>Blank</b> tiles fill the leftover cells before or after the run, never inside it, so on a 5×5 board water can be H H O _ _, _ H H O _ or _ _ H H O. You score, the line fills with new tiles and it gets a new compound.</li>
         <li>A compound is worth <b>5 points per atom</b>: water (H₂O) is 15, rust (Fe₂O₃) is 25. Make more than one with a single swap for a combo: 2 compounds score ×2, 3 score ×3, and so on. New tiles can set off a <b>chain reaction</b>, which adds to the combo.</li>
         <li>Every swap costs one from your supply. The round ends when you run out.</li>
         <li><b>Hint</b> spends 2 swaps to plan a full route to a compound. The tiles to swap glow one pair at a time, and the target is outlined. Follow the plan to the end at no extra cost; any other swap cancels it. <b>Shuffle</b> deals a new board, free, 3 times per round.</li>

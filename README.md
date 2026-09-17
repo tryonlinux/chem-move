@@ -2,8 +2,8 @@
 
 A chemistry swapping puzzle. Every row has a compound on the left and every column
 one on top, by its common name: *Water*, *Rust*, *Laughing gas*. Swap neighbouring
-tiles until a line holds exactly that compound's atoms, with blank tiles in the
-leftover cells. Made lines score, refill with new tiles and get a new compound.
+tiles until a line spells that compound's formula in order, as one unbroken run,
+with blank tiles in the leftover cells before or after it. Made lines score, refill with new tiles and get a new compound.
 
 Live at **[chemmove.tryonlinux.com](https://chemmove.tryonlinux.com)**.
 
@@ -16,12 +16,12 @@ Cloudflare Worker.
 | | |
 |---|---|
 | **Swap** | Tap a tile, then a neighbour (or swipe toward it). Costs 1 swap. |
-| **Make** | A line whose atoms are exactly its compound's formula, in any order, blanks elsewhere. Worth 5 points per atom (water 15, rust 25). |
+| **Make** | A line that spells its compound's formula in order (left to right, or top to bottom) as one unbroken run, with blanks only before or after it: water is `H H O`, never `H O H` or `H _ H O`. Brackets repeat: Ca(OH)₂ is `Ca O H O H`. Worth 5 points per atom (water 15, rust 25). |
 | **Combo** | Make *k* compounds with one swap (chains included) for *k* × their total. |
 | **Clue** | Tap a name: atom count, points and a fact. The formula shows once you've made it. Free. |
 | **Hint** | −2 swaps. Plans a full route to a compound (the best single swap, else the fewest straight slides) and lights it up one pair at a time. Any other swap cancels it. Free if nothing can be made. |
 | **Shuffle** | Deals a fresh board. Free, 3 per round. |
-| **Swaps** | `10 + 6n` per round (40 on the 5×5 daily). The round ends at zero. |
+| **Swaps** | `12 + 8n` per round (52 on the 5×5 daily). The round ends at zero. |
 
 Formulas are never printed on the board: knowing (or working out) that fool's gold is
 FeS₂ is the puzzle. Compounds are sized to the board, from 2–3 atoms on 3×3 up to

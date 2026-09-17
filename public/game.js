@@ -174,38 +174,40 @@
   });
 
   const SUBS = '₀₁₂₃₄₅₆₇₈₉';
+  // "Ca(OH)₂" -> ['Ca', 'O', 'H', 'O', 'H']: the atoms in the order the formula reads.
   function parseFormula(f) {
-    const stack = [{}];
+    const stack = [[]];
     let i = 0;
     const count = () => {
       let s = '';
       while (i < f.length && SUBS.includes(f[i])) s += SUBS.indexOf(f[i++]);
       return s ? Number(s) : 1;
     };
-    const add = (into, el, k) => { into[el] = (into[el] || 0) + k; };
+    const add = (into, seq, k) => { for (let r = 0; r < k; r++) into.push(...seq); };
     while (i < f.length) {
       if (f[i] === '(') {
-        stack.push({});
+        stack.push([]);
         i++;
       } else if (f[i] === ')') {
         i++;
         const inner = stack.pop();
         const k = count();
-        for (const [el, c] of Object.entries(inner)) add(stack[stack.length - 1], el, c * k);
+        add(stack[stack.length - 1], inner, k);
       } else {
         const m = f.slice(i).match(/^[A-Z][a-z]?/);
         if (!m || !ELEMENTS[m[0]]) throw new Error(`Bad formula ${f}`);
         i += m[0].length;
-        add(stack[stack.length - 1], m[0], count());
+        add(stack[stack.length - 1], [m[0]], count());
       }
     }
     return stack[0];
   }
 
   const MOLS = COMPOUNDS.map(([id, name, emoji, formula, fact]) => {
-    const atoms = parseFormula(formula);
-    const size = Object.values(atoms).reduce((a, b) => a + b, 0);
-    return { id, name, label: breakable(name), emoji, formula, fact, atoms, size, value: 5 * size };
+    const seq = parseFormula(formula);
+    const atoms = {};
+    for (const el of seq) atoms[el] = (atoms[el] || 0) + 1;
+    return { id, name, label: breakable(name), emoji, formula, fact, seq, atoms, size: seq.length, value: 5 * seq.length };
   });
   const MOL = Object.fromEntries(MOLS.map((m) => [m.id, m]));
 
@@ -217,7 +219,7 @@
   const DAILY_N = 5;
   const SHUFFLES = 3;
   const HINT_COST = 2;
-  const swapBudget = (n) => 10 + 6 * n;
+  const swapBudget = (n) => 12 + 8 * n;
   const CODE_CHARS = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
   const LOG_EMOJI = { 0: '⬜', 1: '🟩', 2: '🟨', 3: '🟧', h: '💡', s: '🔀' };
 
@@ -311,18 +313,15 @@
   function setTarget(g, key, t) {
     (key[0] === 'r' ? g.rows : g.cols)[Number(key.slice(1))] = t;
   }
-  // A line makes its compound when its atoms are exactly the formula's: blanks fill the rest.
+  // A line makes its compound when, read left to right (or top to bottom), it
+  // spells the formula as one unbroken run: H₂O is H H O, never H O H or H _ H O.
+  // Blanks fill the cells before and after the run.
   function lineHas(g, key, m) {
-    const have = {};
-    let atoms = 0;
-    for (const idx of lineCells(g.n, key)) {
-      const el = g.v[idx];
-      if (el === BLANK) continue;
-      if (!m.atoms[el]) return false;
-      have[el] = (have[el] || 0) + 1;
-      atoms += 1;
-    }
-    return atoms === m.size && Object.entries(m.atoms).every(([el, c]) => have[el] === c);
+    const line = lineCells(g.n, key).map((idx) => g.v[idx]);
+    const start = line.findIndex((el) => el !== BLANK);
+    return start >= 0
+      && m.seq.every((el, k) => line[start + k] === el)
+      && line.slice(start + m.size).every((el) => el === BLANK);
   }
   const solvedLines = (g) => lineKeys(g.n).filter((k) => lineHas(g, k, MOL[targetOf(g, k)]));
   const lineName = (key) => `${key[0] === 'r' ? 'row' : 'column'} ${Number(key.slice(1)) + 1}`;
@@ -342,36 +341,33 @@
   // Cheapest way to build compound m in one line by sliding tiles straight
   // into it along the crossing lines. A slide only touches its own crossing
   // line, so any mix of slides at different positions is valid; a DP over
-  // positions (keyed by the atoms still missing) finds the cheapest mix.
+  // positions (keyed by how much of the formula is in place) finds the cheapest mix.
   // Every position must end up holding a needed atom or a blank.
   // Returns null if no mix works, and cost 0 if the line already has it.
   function planFor(g, key, m) {
     const n = g.n;
     const i = Number(key.slice(1));
     const cell = key[0] === 'r' ? (line, pos) => line * n + pos : (line, pos) => pos * n + line;
-    const els = Object.keys(m.atoms);
-    const start = els.map((el) => m.atoms[el]);
-    let states = new Map([[start.join(), { need: start, cost: 0, prev: null }]]);
+    let states = new Map([[0, { done: 0, cost: 0, prev: null }]]);
     for (let pos = 0; pos < n; pos++) {
       const next = new Map();
       for (const st of states.values()) {
         for (let j = 0; j < n; j++) {
           const at = g.v[cell(j, pos)];
-          const k = els.indexOf(at);
-          if (at !== BLANK && (k < 0 || !st.need[k])) continue;
+          if (at !== BLANK && at !== m.seq[st.done]) continue;
+          // Blanks only go before or after the formula, never inside it.
+          if (at === BLANK && st.done > 0 && st.done < m.size) continue;
           // Pulling in a blank only helps if the tile already here is in the way.
           if (at === BLANK && j !== i && g.v[cell(i, pos)] === BLANK) continue;
-          const need = st.need.slice();
-          if (k >= 0) need[k] -= 1;
+          const done = st.done + (at === BLANK ? 0 : 1);
           const cost = st.cost + Math.abs(j - i);
-          const id = need.join();
-          const cur = next.get(id);
-          if (!cur || cost < cur.cost) next.set(id, { need, cost, prev: st, pos, from: j });
+          const cur = next.get(done);
+          if (!cur || cost < cur.cost) next.set(done, { done, cost, prev: st, pos, from: j });
         }
       }
       states = next;
     }
-    const end = states.get(start.map(() => 0).join());
+    const end = states.get(m.size);
     if (!end) return null;
     const steps = [];
     for (let st = end; st.prev; st = st.prev) {
@@ -544,8 +540,6 @@
   function loadGame(id) {
     const saved = store.get(`game:${id}`, null);
     game = validGame(saved, id) ? saved : newGame(id);
-    // Rounds saved as over before their result was recorded (older versions).
-    if (game.done && !game.recorded) lastFinish = recordResult(game);
     epoch += 1;
     disarmRestart();
     selected = null;
@@ -810,7 +804,7 @@
     if (game.plan) return `Hint: swap the glowing atoms. ${plural(game.plan.steps.length, 'swap')} to make ${MOL[targetOf(game, game.plan.key)].name} in ${lineName(game.plan.key)}.`;
     return game.used
       ? 'Tap an atom, then a neighbour to swap.'
-      : 'Fill each row and column with exactly its compound\'s atoms, blanks for the rest. Tap a name for a clue.';
+      : 'Spell each compound\'s formula in order along its row or column, blanks before or after. Tap a name for a clue.';
   }
 
   function say(text) {
