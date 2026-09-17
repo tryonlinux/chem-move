@@ -505,19 +505,9 @@
     return best;
   }
 
-  // Deal a fresh board, tiles and targets. Free when nothing can be made from
-  // the current one, so a dead end never strands the leftover swaps.
-  function shuffleBoard(g, free) {
-    const rng = makeRng(g.rng);
-    deal(g, rng);
-    g.rng = rng.state();
-    if (!free) g.shuffles -= 1;
-    g.log += 's';
-  }
-
   // Test hook: node can load this file with a stub window to check the rules.
   if (typeof window.__chemmoveTest === 'function') {
-    window.__chemmoveTest({ MOLS, MOL, ELEMENTS, BLANK, sizeRange, molsFor, newGame, applySwap, findHint, shuffleBoard, planFor, solvedLines, lineKeys, targetOf });
+    window.__chemmoveTest({ MOLS, MOL, ELEMENTS, BLANK, sizeRange, molsFor, newGame, applySwap, findHint, planFor, solvedLines, lineKeys, targetOf });
     return;
   }
 
@@ -533,12 +523,6 @@
   let busy = false;
   let epoch = 0; // bumped whenever a different board loads, so stale timers bail out
   let lastFinish = {};
-  let stuckMemo = { key: '', stuck: false };
-  function isStuck() {
-    const key = `${game.id}|${game.v.join()}|${game.rows.join()}|${game.cols.join()}`;
-    if (stuckMemo.key !== key) stuckMemo = { key, stuck: !findHint(game) };
-    return stuckMemo.stuck;
-  }
   let newSize = clamp(Number(store.get('lastSize', 6)) || 6, MIN_N, MAX_N);
 
   function save() {
@@ -796,9 +780,8 @@
     el.hudSwaps.classList.toggle('low', game.swaps <= 5);
 
     el.hintBtn.disabled = game.done || busy || (!game.plan && game.swaps <= HINT_COST);
-    const freeShuffle = !game.done && isStuck();
-    el.shuffleBtn.disabled = game.done || busy || (game.shuffles <= 0 && !freeShuffle);
-    el.shuffleLeft.textContent = freeShuffle ? 'free' : `${game.shuffles} left`;
+    el.shuffleBtn.disabled = game.done || busy || game.shuffles <= 0;
+    el.shuffleLeft.textContent = `${game.shuffles} left`;
     el.board.classList.toggle('done', game.done);
 
     el.doneBar.hidden = !game.done;
@@ -987,7 +970,7 @@
     if (game.swaps <= HINT_COST) return;
     const found = findHint(game);
     if (!found) {
-      say('No compound can be made from here, so shuffling is free. That hint was free too.');
+      say('No compound can be made from here. Try a shuffle. That hint was free.');
       return;
     }
     game.swaps -= HINT_COST;
@@ -1009,18 +992,19 @@
   }
 
   function useShuffle() {
-    if (busy || game.done) return;
-    const free = isStuck();
-    if (game.shuffles <= 0 && !free) return;
-    shuffleBoard(game, free);
+    if (busy || game.done || game.shuffles <= 0) return;
+    const rng = makeRng(game.rng);
+    deal(game, rng);
+    game.rng = rng.state();
+    game.shuffles -= 1;
+    game.log += 's';
     selected = null;
     game.plan = null;
     save();
     render();
     Array.from(tileEls()).forEach((t) => restartAnim(t, 'fresh'));
     sound('shuffle');
-    const left = game.shuffles ? `${plural(game.shuffles, 'shuffle')} left.` : 'That was your last shuffle.';
-    say(`New board dealt. ${free ? 'Nothing could be made, so that one was free.' : left}`);
+    say(`New board dealt. ${game.shuffles ? `${plural(game.shuffles, 'shuffle')} left.` : 'That was your last shuffle.'}`);
   }
 
   let restartArmed = 0;
