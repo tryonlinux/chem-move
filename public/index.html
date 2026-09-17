@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>ChemMove — a daily atom-swapping chemistry puzzle</title>
+  <meta name="description" content="Swap neighbouring atoms until a row or column holds exactly the compound named beside it. Make water, rust, laughing gas and more, chain reactions for combos, and fill your lab notebook. A new ChemMove puzzle every day.">
+  <meta name="theme-color" content="#eef3ef" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0e1614" media="(prefers-color-scheme: dark)">
+  <link rel="canonical" href="https://chemmove.tryonlinux.com/">
+
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="ChemMove">
+  <meta property="og:title" content="ChemMove">
+  <meta property="og:description" content="Swap atoms, build compounds, set off chain reactions. A new chemistry puzzle every day.">
+  <meta property="og:url" content="https://chemmove.tryonlinux.com/">
+  <meta property="og:image" content="https://chemmove.tryonlinux.com/og-image.png">
+  <meta property="og:image:type" content="image/png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="A grid of coloured element tiles with compound names like Water and Rust along the top and left edges">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="ChemMove">
+  <meta name="twitter:description" content="Swap atoms, build compounds, set off chain reactions. A new chemistry puzzle every day.">
+  <meta name="twitter:image" content="https://chemmove.tryonlinux.com/og-image.png">
+
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="manifest" href="site.webmanifest">
+  <meta name="apple-mobile-web-app-title" content="ChemMove">
+  <link rel="stylesheet" href="style.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "VideoGame",
+    "name": "ChemMove",
+    "url": "https://chemmove.tryonlinux.com/",
+    "image": "https://chemmove.tryonlinux.com/og-image.png",
+    "description": "A chemistry puzzle. Swap neighbouring atoms on a grid until a row or column holds exactly the atoms of the compound named beside it, like water (H₂O) or rust (Fe₂O₃), with blank tiles filling the rest. Completed lines refresh and score points; make several with one swap for a combo. A new daily puzzle for everyone, plus random games from 3×3 to 10×10.",
+    "genre": ["Puzzle", "Educational"],
+    "applicationCategory": "Game",
+    "gamePlatform": "Web browser",
+    "playMode": "SinglePlayer",
+    "operatingSystem": "Any",
+    "inLanguage": "en",
+    "author": { "@type": "Person", "name": "Jordan Tryon" },
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+  }
+  </script>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="./" aria-label="ChemMove home">
+      <img class="brand-mark" src="favicon.svg" alt="" width="34" height="34">
+      <span class="brand-word">Chem<b>Move</b></span>
+    </a>
+    <nav class="topnav">
+      <button class="btn ghost" data-open="help" aria-label="How to play"><span class="lbl-full">How to play</span><span class="lbl-short">Help</span></button>
+      <button class="btn ghost" data-open="stats" aria-label="Lab notebook and stats"><span class="lbl-full">Notebook</span><span class="lbl-short">Stats</span></button>
+      <button class="btn ghost" data-open="new" aria-label="New game"><span class="lbl-full">New game</span><span class="lbl-short">New</span></button>
+      <button class="btn ghost icon-btn" data-open="settings" aria-label="Settings">
+        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M19.14 12.94c.04-.3.06-.61.06-.94s-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.49.49 0 0 0-.59-.22l-2.39.96a7.03 7.03 0 0 0-1.62-.94l-.36-2.54A.48.48 0 0 0 13.92 2h-3.84a.48.48 0 0 0-.48.41l-.36 2.54c-.59.24-1.13.56-1.62.94l-2.39-.96a.49.49 0 0 0-.59.22L2.72 8.47a.48.48 0 0 0 .12.61l2.03 1.58c-.05.3-.07.63-.07.94s.02.64.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32a.48.48 0 0 0-.12-.61l-2.01-1.58ZM12 15.6A3.6 3.6 0 1 1 12 8.4a3.6 3.6 0 0 1 0 7.2Z"/></svg>
+      </button>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <section class="hud">
+      <div class="hud-name">
+        <span id="hudTitle">Daily experiment</span>
+        <span class="muted small" id="hudSub"></span>
+      </div>
+      <div class="hud-stat"><span class="label">Score</span><strong id="hudScore">0</strong></div>
+      <div class="hud-stat"><span class="label">Made</span><strong id="hudLines">0</strong></div>
+      <div class="hud-stat"><span class="label">Swaps</span><strong id="hudSwaps">0</strong></div>
+    </section>
+
+    <section class="card board-card">
+      <div class="stage" id="stage">
+        <div class="board" id="board">
+          <div class="corner" aria-hidden="true">⚗️</div>
+          <div class="col-heads" id="colHeads" role="group" aria-label="Column targets. Select one to learn about the compound."></div>
+          <div class="row-heads" id="rowHeads" role="group" aria-label="Row targets. Select one to learn about the compound."></div>
+          <div class="tiles" id="tiles" role="group" aria-label="Atoms. Use arrow keys to move, Enter to pick an atom, then Enter on a neighbour to swap."></div>
+        </div>
+        <div class="float" id="float" aria-hidden="true"></div>
+      </div>
+
+      <div class="tools">
+        <button class="tool" id="hintBtn">
+          <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M9 21h6v-1.5H9V21Zm3-19a7 7 0 0 0-4 12.74V17a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-2.26A7 7 0 0 0 12 2Zm2.85 11.1-.85.6V16h-4v-2.3l-.85-.6a5 5 0 1 1 5.7 0Z"/></svg>
+          Hint <span class="cost">−2 swaps</span>
+        </button>
+        <button class="tool" id="shuffleBtn">
+          <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M10.59 9.17 5.41 4 4 5.41l5.17 5.17 1.42-1.41ZM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5Zm.33 9.41-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13Z"/></svg>
+          Shuffle <span class="cost" id="shuffleLeft">3 left</span>
+        </button>
+        <span class="spacer"></span>
+        <button class="tool" id="restartBtn">
+          <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M12 5V1L7 6l5 5V7a6 6 0 1 1-6 6H4a8 8 0 1 0 8-8Z"/></svg>
+          <span id="restartLbl">Restart</span>
+        </button>
+      </div>
+      <p class="msg" id="msg" aria-live="polite"></p>
+    </section>
+
+    <section class="card done-bar" id="doneBar" hidden>
+      <div>
+        <strong id="doneTitle">Out of swaps</strong>
+        <div class="muted small" id="doneSub"></div>
+      </div>
+      <div class="inline">
+        <button class="btn" data-open="finish">Results</button>
+        <button class="btn primary" data-open="new">New game</button>
+      </div>
+    </section>
+
+    <noscript><section class="card notfound"><p>ChemMove needs JavaScript to run.</p></section></noscript>
+  </main>
+
+  <footer class="foot">
+    <span class="foot-group"><span>ChemMove</span><span class="sep" aria-hidden="true">·</span><span id="footGame"></span></span>
+    <span class="sep foot-gsep" aria-hidden="true">·</span>
+    <span class="foot-group"><a class="foot-link" href="https://github.com/tryonlinux/chem-move" target="_blank" rel="noopener noreferrer">
+      <svg class="gh" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>
+      Source on GitHub
+    </a></span>
+    <a class="foot-link foot-also" href="https://parchem.tryonlinux.com/">Also try Par for the Chem ⛳</a>
+    <p class="foot-support">Find this useful? You can support it with a <a href="https://buymeacoffee.com/tryomas" target="_blank" rel="noopener noreferrer">coffee</a>. Thanks!</p>
+  </footer>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <!-- How to play -->
+  <dialog id="dlg-help">
+    <div class="dlg">
+      <header><h2>How to play</h2><button class="x" data-close aria-label="Close">×</button></header>
+      <p class="lead">Swap tiles until each row and column holds <b>exactly</b> the atoms of the compound named beside it.</p>
+      <div class="demo" aria-hidden="true">
+        <div class="demo-grid">
+          <span class="d-hdr"></span><span class="d-hdr">🎈<small>Hydrogen</small></span><span class="d-hdr">🫁<small>Oxygen</small></span><span class="d-hdr">🍽️<small>Stomach acid</small></span>
+          <span class="d-hdr">💧<small>Water</small></span><span class="d-tile el-h">H</span><span class="d-tile el-o">O</span><span class="d-tile el-ca d-sel">Ca</span>
+          <span class="d-hdr">🔥<small>Quicklime</small></span><span class="d-tile el-o">O</span><span class="d-tile d-blank"></span><span class="d-tile el-h">H</span>
+        </div>
+        <div class="demo-arrow">→</div>
+        <div class="demo-grid">
+          <span class="d-hdr"></span><span class="d-hdr">🎈<small>Hydrogen</small></span><span class="d-hdr">🫁<small>Oxygen</small></span><span class="d-hdr">🍽️<small>Stomach acid</small></span>
+          <span class="d-hdr d-hit">💧<small>Water</small></span><span class="d-tile el-h d-hit">H</span><span class="d-tile el-o d-hit">O</span><span class="d-tile el-h d-hit">H</span>
+          <span class="d-hdr d-hit">🔥<small>Quicklime</small></span><span class="d-tile el-o d-hit">O</span><span class="d-tile d-blank d-hit"></span><span class="d-tile el-ca d-hit">Ca</span>
+        </div>
+      </div>
+      <p class="demo-cap muted small">Water is H₂O and quicklime is CaO. Swapping the Ca down for the H makes both at once: a combo.</p>
+      <ol class="steps">
+        <li>Each row has a compound on the <b>left</b> and each column one on <b>top</b>, by its common name. The formula is up to you. Tap a name for a clue: how many atoms it has and a fact about it.</li>
+        <li>Tap a tile, then tap a tile <b>next to it</b> (left, right, up or down) to swap them. You can also swipe a tile toward its neighbour.</li>
+        <li>A line is <b>made</b> when its atoms match the formula exactly, in any order. <b>Blank</b> tiles fill the leftover cells, so a 3-atom compound on a 5×5 board needs two blanks in its line. You score, the line fills with new tiles and it gets a new compound.</li>
+        <li>A compound is worth <b>5 points per atom</b>: water (H₂O) is 15, rust (Fe₂O₃) is 25. Make more than one with a single swap for a combo: 2 compounds score ×2, 3 score ×3, and so on. New tiles can set off a <b>chain reaction</b>, which adds to the combo.</li>
+        <li>Every swap costs one from your supply. The round ends when you run out.</li>
+        <li><b>Hint</b> spends 2 swaps to plan a full route to a compound. The tiles to swap glow one pair at a time, and the target is outlined. Follow the plan to the end at no extra cost; any other swap cancels it. <b>Shuffle</b> deals a new board, free, 3 times per round.</li>
+      </ol>
+      <p class="fine">Every compound can be made from the board it was dealt with. Bigger boards ask for bigger molecules. Once you've made a compound, its formula goes in your <b>lab notebook</b> and shows when you tap its name. The <b>Daily</b> board is the same for everyone, and your first finish is the one that counts.</p>
+      <div class="dlg-actions"><button class="btn primary" data-close>Let's react</button></div>
+    </div>
+  </dialog>
+
+  <!-- Stats -->
+  <dialog id="dlg-stats">
+    <div class="dlg">
+      <header><h2>Lab notebook</h2><button class="x" data-close aria-label="Close">×</button></header>
+      <div class="stat-grid" id="statGrid"></div>
+      <p class="center muted small" id="statNext"></p>
+      <h3>Compounds discovered <span class="book-count" id="bookCount"></span></h3>
+      <div class="notebook" id="notebook"></div>
+      <h3>Best by grid size</h3>
+      <div class="size-bests" id="sizeBests"></div>
+      <h3>Recent rounds</h3>
+      <div id="recentRounds"></div>
+      <p class="fine">Your notebook and stats are saved in this browser only. They don't sync to your other devices.</p>
+    </div>
+  </dialog>
+
+  <!-- New game -->
+  <dialog id="dlg-new">
+    <div class="dlg">
+      <header><h2>New game</h2><button class="x" data-close aria-label="Close">×</button></header>
+      <div class="option">
+        <div>
+          <strong>Daily experiment</strong>
+          <div class="muted small" id="dailyStatus">Same 5×5 board for everyone today.</div>
+        </div>
+        <button class="btn primary" id="playDaily">Play daily</button>
+      </div>
+      <div class="option">
+        <div>
+          <strong>Random game</strong>
+          <div class="muted small" id="sizeInfo">A new board, with a code you can share.</div>
+        </div>
+        <div class="inline">
+          <div class="stepper" role="group" aria-label="Grid size">
+            <button class="tool icon" id="sizeDown" aria-label="Smaller grid">−</button>
+            <output id="sizeValue" aria-live="polite">6×6</output>
+            <button class="tool icon" id="sizeUp" aria-label="Bigger grid">+</button>
+          </div>
+          <button class="btn" id="playRandom">Start</button>
+        </div>
+      </div>
+      <form class="option" id="codeForm">
+        <label for="codeInput"><strong>Game code</strong>
+          <span class="muted small">Play a friend's board.</span></label>
+        <div class="inline">
+          <input id="codeInput" maxlength="11" placeholder="e.g. K3F9QZ-6" autocapitalize="characters" autocomplete="off" spellcheck="false">
+          <button class="btn">Go</button>
+        </div>
+      </form>
+      <div class="option subtle">
+        <div>
+          <strong>Current game</strong>
+          <div class="muted small" id="currentGameInfo"></div>
+        </div>
+        <button class="btn ghost" id="copyLink">Copy link</button>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- Settings -->
+  <dialog id="dlg-settings">
+    <div class="dlg">
+      <header><h2>Settings</h2><button class="x" data-close aria-label="Close">×</button></header>
+      <label class="option switch-row">
+        <span><strong>Element colours</strong><span class="muted small">Tint each atom with its element's colour.</span></span>
+        <input type="checkbox" role="switch" class="switch" data-setting="colors">
+      </label>
+      <label class="option switch-row">
+        <span><strong>Highlight swaps</strong><span class="muted small">Outline the atoms a selected atom can swap with.</span></span>
+        <input type="checkbox" role="switch" class="switch" data-setting="moves">
+      </label>
+      <label class="option switch-row">
+        <span><strong>Sound</strong><span class="muted small">Quiet clicks, fizzes and chimes.</span></span>
+        <input type="checkbox" role="switch" class="switch" data-setting="sound">
+      </label>
+    </div>
+  </dialog>
+
+  <!-- Round complete -->
+  <dialog id="dlg-finish">
+    <div class="dlg">
+      <header><h2 id="finTitle">Round complete</h2><button class="x" data-close aria-label="Close">×</button></header>
+      <div class="big-score"><strong id="finScore">0</strong><span class="muted">points</span></div>
+      <p class="center muted" id="finLine"></p>
+      <p class="center badge-line" id="finBadge" hidden></p>
+      <div class="chips" id="finMade"></div>
+      <pre class="emoji-card" id="finEmoji"></pre>
+      <p class="center muted small" id="finNext"></p>
+      <div class="dlg-actions">
+        <button class="btn" id="shareBtn">Share result</button>
+        <button class="btn ghost" data-open="stats">Notebook</button>
+        <button class="btn primary" data-open="new">New game</button>
+      </div>
+    </div>
+  </dialog>
+
+  <script src="game.js"></script>
+</body>
+</html>

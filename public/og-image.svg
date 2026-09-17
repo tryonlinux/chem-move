@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <pattern id="paper" width="24" height="24" patternUnits="userSpaceOnUse">
+      <path d="M24 0H0V24" fill="none" stroke="#0e8f7e" stroke-opacity="0.09" stroke-width="1"/>
+    </pattern>
+    <filter id="sh" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="10" stdDeviation="16" flood-color="#17231f" flood-opacity="0.12"/>
+    </filter>
+  </defs>
+  <rect width="1200" height="630" fill="#eef3ef"/>
+  <rect width="1200" height="630" fill="url(#paper)"/>
+  <g font-family="ui-rounded, 'SF Pro Rounded', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif" fill="#17231f">
+    <rect x="80" y="96" width="84" height="84" rx="22" fill="#0e8f7e"/>
+    <rect x="92" y="108" width="34" height="34" rx="8" fill="#fcfdfb"/><text x="109" y="134" font-size="22" font-weight="800" text-anchor="middle">O</text>
+    <rect x="118" y="134" width="34" height="34" rx="8" fill="#fcfdfb"/><text x="135" y="160" font-size="22" font-weight="800" text-anchor="middle">H</text>
+    <text x="80" y="290" font-size="98" font-weight="800" letter-spacing="-3">Chem<tspan fill="#0e8f7e">Move</tspan></text>
+    <text x="84" y="358" font-size="38" font-weight="600" fill="#4b5a55">Swap atoms. Build molecules.</text>
+    <text x="84" y="408" font-size="38" font-weight="600" fill="#4b5a55">Set off chain reactions.</text>
+    <rect x="84" y="468" width="360" height="64" rx="32" fill="#0e8f7e"/>
+    <text x="264" y="511" font-size="30" font-weight="700" fill="#ffffff" text-anchor="middle">New experiment daily</text>
+  </g>
+  <g transform="translate(640 70)" font-family="ui-rounded, 'SF Pro Rounded', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif">
+    <rect x="-24" y="-24" width="532" height="532" rx="36" fill="#fcfdfb" stroke="#d5e0d9" stroke-width="2" filter="url(#sh)"/>
+    <rect x="156" y="0" width="88" height="96" rx="20" fill="#d6eee8"/><text x="200.0" y="43.2" font-size="30" text-anchor="middle">💧</text><text x="200.0" y="76.80000000000001" font-size="17" font-weight="800" fill="#17231f" text-anchor="middle">Water</text>
+    <rect x="252" y="0" width="88" height="96" rx="20" fill="#d6eee8"/><text x="296.0" y="43.2" font-size="30" text-anchor="middle">🧼</text><text x="296.0" y="76.80000000000001" font-size="17" font-weight="800" fill="#17231f" text-anchor="middle">Lye</text>
+    <rect x="348" y="0" width="88" height="96" rx="20" fill="#d6eee8"/><text x="392.0" y="43.2" font-size="30" text-anchor="middle">🔩</text><text x="392.0" y="76.80000000000001" font-size="17" font-weight="800" fill="#17231f" text-anchor="middle">Rust</text>
+    <rect x="0" y="104" width="148" height="88" rx="20" fill="#f5c542"/><text x="34" y="159.0" font-size="30" text-anchor="middle">🫁</text><text x="106" y="156.0" font-size="20" font-weight="800" fill="#17231f" text-anchor="middle">Oxygen</text>
+    <rect x="0" y="200" width="148" height="88" rx="20" fill="#d6eee8"/><text x="34" y="255.0" font-size="30" text-anchor="middle">🐄</text><text x="106" y="252.0" font-size="20" font-weight="800" fill="#17231f" text-anchor="middle">Methane</text>
+    <rect x="0" y="296" width="148" height="88" rx="20" fill="#d6eee8"/><text x="34" y="351.0" font-size="30" text-anchor="middle">🧊</text><text x="106" y="348.0" font-size="20" font-weight="800" fill="#17231f" text-anchor="middle">Dry ice</text>
+    <rect x="0" y="392" width="148" height="88" rx="20" fill="#d6eee8"/><text x="34" y="447.0" font-size="30" text-anchor="middle">🔥</text><text x="106" y="444.0" font-size="17" font-weight="800" fill="#17231f" text-anchor="middle">Quicklime</text>
+    <rect x="156" y="104" width="88" height="88" rx="18" fill="#f5c542" stroke="#ef4444" stroke-width="2"/><text x="165" y="125" font-size="15" font-weight="600" fill="#62706b">8</text><text x="200" y="166" font-size="37" font-weight="800" fill="#17231f" text-anchor="middle">O</text>
+    <rect x="252" y="104" width="88" height="88" rx="18" fill="#f5c542" stroke="#ef4444" stroke-width="2"/><text x="261" y="125" font-size="15" font-weight="600" fill="#62706b">8</text><text x="296" y="166" font-size="37" font-weight="800" fill="#17231f" text-anchor="middle">O</text>
+    <rect x="348" y="104" width="88" height="88" rx="18" fill="none" stroke="#cfdad3" stroke-width="3" stroke-dasharray="8 6"/><circle cx="392.0" cy="148.0" r="8" fill="#cfdad3"/>
+    <rect x="156" y="200" width="88" height="88" rx="18" fill="#dde4ee" stroke="#9fb3cc" stroke-width="2"/><text x="165" y="221" font-size="15" font-weight="600" fill="#62706b">1</text><text x="200" y="262" font-size="37" font-weight="800" fill="#17231f" text-anchor="middle">H</text>
+    <rect x="252" y="200" width="88" height="88" rx="18" fill="#d8dadf" stroke="#6b7280" stroke-width="2"/><text x="261" y="221" font-size="15" font-weight="600" fill="#62706b">6</text><text x="296" y="262" font-size="37" font-weight="800" fill="#17231f" text-anchor="middle">C</text>
+    <rect x="348" y="200" width="88" height="88" rx="18" fill="#dde4ee" stroke="#9fb3cc" stroke-width="2"/><text x="357" y="221" font-size="15" font-weight="600" fill="#62706b">1</text><text x="392" y="262" font-size="37" font-weight="800" fill="#17231f" text-anchor="middle">H</text>
+    <rect x="156" y="296" width="88" height="88" rx="18" fill="#fbd0d0" stroke="#ef4444" stroke-width="2"/><text x="165" y="317" font-size="15" font-weight="600" fill="#62706b">8</text><text x="200" y="358" font-size="37" font-weight="800" fill="#17231f" text-anchor="middle">O</text>
+    <rect x="252" y="296" width="88" height="88" rx="18" fill="#ecdcfd" stroke="#a855f7" stroke-width="2"/><text x="261" y="317" font-size="15" font-weight="600" fill="#62706b">11</text><text x="296" y="358" font-size="32" font-weight="800" fill="#17231f" text-anchor="middle">Na</text>
+    <rect x="348" y="296" width="88" height="88" rx="18" fill="#d8dadf" stroke="#0e8f7e" stroke-width="5"/><text x="357" y="317" font-size="15" font-weight="600" fill="#62706b">6</text><text x="392" y="358" font-size="37" font-weight="800" fill="#17231f" text-anchor="middle">C</text>
+    <rect x="156" y="392" width="88" height="88" rx="18" fill="#c6dfdc" stroke="#0f766e" stroke-width="2"/><text x="165" y="413" font-size="15" font-weight="600" fill="#62706b">20</text><text x="200" y="454" font-size="32" font-weight="800" fill="#17231f" text-anchor="middle">Ca</text>
+    <rect x="252" y="392" width="88" height="88" rx="18" fill="#c9f0d6" stroke="#22c55e" stroke-width="2"/><text x="261" y="413" font-size="15" font-weight="600" fill="#62706b">17</text><text x="296" y="454" font-size="32" font-weight="800" fill="#17231f" text-anchor="middle">Cl</text>
+    <rect x="348" y="392" width="88" height="88" rx="18" fill="#fbd0d0" stroke="#ef4444" stroke-width="2"/><text x="357" y="413" font-size="15" font-weight="600" fill="#62706b">8</text><text x="392" y="454" font-size="37" font-weight="800" fill="#17231f" text-anchor="middle">O</text>
+    <text x="408" y="-36" font-size="30" font-weight="800" fill="#c2410c">+10</text>
+  </g>
+</svg>

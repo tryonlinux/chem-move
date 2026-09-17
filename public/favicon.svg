@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="ChemMove">
+  <rect width="128" height="128" rx="28" fill="#0e8f7e"/>
+  <g font-family="ui-rounded, 'SF Pro Rounded', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif" font-weight="800" text-anchor="middle">
+    <rect x="14" y="14" width="46" height="46" rx="10" fill="#fcfdfb"/>
+    <rect x="14" y="54" width="46" height="6" rx="3" fill="#ef4444"/>
+    <text x="37" y="48" font-size="30" fill="#17231f">O</text>
+    <rect x="68" y="68" width="46" height="46" rx="10" fill="#fcfdfb"/>
+    <rect x="68" y="108" width="46" height="6" rx="3" fill="#9fb3cc"/>
+    <text x="91" y="102" font-size="30" fill="#17231f">H</text>
+  </g>
+  <g fill="none" stroke="#f5c542" stroke-width="7" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M72 26c16 0 28 8 30 24"/>
+    <path d="M94 44l8 7 7-9"/>
+    <path d="M56 102c-16 0-28-8-30-24"/>
+    <path d="M34 84l-8-7-7 9"/>
+  </g>
+</svg>
