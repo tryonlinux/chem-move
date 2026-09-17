@@ -20,7 +20,7 @@ Cloudflare Worker.
 | **Combo** | Make *k* compounds with one swap (chains included) for *k* × their total. |
 | **Clue** | Tap a name: atom count, points and a fact. The formula shows once you've made it. Free. |
 | **Hint** | −2 swaps. Plans a full route to a compound (the best single swap, else the fewest straight slides) and lights it up one pair at a time. Any other swap cancels it. Free if nothing can be made. |
-| **Shuffle** | Deals a fresh board. Free, 3 per round. |
+| **Shuffle** | Deals fresh tiles and compounds. Free, 3 per round, plus unlimited whenever nothing on the board can be made. |
 | **Swaps** | `12 + 8n` per round (52 on the 5×5 daily). The round ends at zero. |
 
 Formulas are never printed on the board: knowing (or working out) that fool's gold is
