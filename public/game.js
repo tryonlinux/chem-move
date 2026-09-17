@@ -378,37 +378,38 @@
     return { key, steps, cost: end.cost };
   }
 
-  // A compound the line can actually build from the board it was dealt with,
-  // that it doesn't already contain, and (where possible) that no other line
-  // is already asking for.
+  // A compound the line doesn't already spell, that it can build from the
+  // board, preferring ones no other line is asking for and never more than
+  // MAX_REPEAT lines on the same one. When dealing (strict), returns null if
+  // none fits, so the board is dealt again. Mid-game it falls back to an unused
+  // one that becomes buildable as other lines refresh or the player shuffles.
+  const MAX_REPEAT = 2;
   function reachableTarget(g, key, rng, strict = false) {
     const n = g.n;
-    const taken = new Set(lineKeys(n).filter((k) => k !== key).map((k) => targetOf(g, k)));
-    const options = [];
-    const stuck = [];
+    const uses = {};
+    for (const k of lineKeys(n)) if (k !== key) uses[targetOf(g, k)] = (uses[targetOf(g, k)] || 0) + 1;
+    const fresh = [];
+    const repeat = [];
     for (const m of molsFor(n)) {
+      if ((uses[m.id] || 0) >= MAX_REPEAT) continue;
       const plan = planFor(g, key, m);
-      if (plan && !plan.cost) continue;
-      (plan ? options : stuck).push({ m, cost: plan ? plan.cost : Infinity, fresh: !taken.has(m.id) });
+      if (plan && plan.cost) (uses[m.id] ? repeat : fresh).push({ m, cost: plan.cost });
     }
-    const prefer = (list) => (list.some((o) => o.fresh) ? list.filter((o) => o.fresh) : list);
+    const options = fresh.length ? fresh : repeat;
     if (options.length) {
-      const pool = prefer(options);
-      const near = pool.filter((o) => o.cost <= n + 1);
+      const near = options.filter((o) => o.cost <= n + 1);
       if (near.length) return pick(rng, near).m.id;
-      pool.sort((a, b) => a.cost - b.cost || (a.m.id < b.m.id ? -1 : 1));
-      return pick(rng, pool.slice(0, 3)).m.id;
+      options.sort((a, b) => a.cost - b.cost || (a.m.id < b.m.id ? -1 : 1));
+      return pick(rng, options.slice(0, 3)).m.id;
     }
     if (strict) return null;
-    // Nothing is reachable from here: the target becomes solvable once
-    // another line refreshes or the player shuffles.
-    if (stuck.length) return pick(rng, prefer(stuck)).m.id;
-    return pick(rng, molsFor(n)).id;
+    const unused = molsFor(n).filter((m) => !uses[m.id] && !lineHas(g, key, m));
+    return pick(rng, unused.length ? unused : molsFor(n)).id;
   }
 
   // Every dealt target must be buildable from the board, so redeal the rare
   // (mostly 3×3) boards where some line has nothing within reach.
-  const DEAL_TRIES = 50;
+  const DEAL_TRIES = 200;
   function deal(g, rng) {
     for (let t = 1; ; t++) {
       const strict = t < DEAL_TRIES;
