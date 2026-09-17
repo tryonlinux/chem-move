@@ -21,7 +21,7 @@ Cloudflare Worker.
 | **Clue** | Tap a name: atom count, points and a fact. The formula shows once you've made it. Free. |
 | **Hint** | −2 swaps. Plans a full route to a compound (the best single swap, else the fewest straight slides) and lights it up one pair at a time. Any other swap cancels it. Free if nothing can be made. |
 | **Shuffle** | Deals a fresh board. Free, 3 per round. |
-| **Swaps** | `12 + 8n` per round (52 on the 5×5 daily). The round ends at zero. |
+| **Swaps** | `12 + 8n` per round (52 on the 5×5 daily). The round ends at zero, or early once shuffles are gone and no line's compound can be spelled from the tiles on the board. |
 
 Formulas are never printed on the board: knowing (or working out) that fool's gold is
 FeS₂ is the puzzle. Compounds are sized to the board, from 2–3 atoms on 3×3 up to

@@ -446,6 +446,17 @@
       && (!g.plan || (Array.isArray(g.plan.steps) && g.plan.steps.length > 0 && typeof g.plan.key === 'string'));
   }
 
+  // True when no amount of swapping can make any line: every target needs an
+  // atom, or more blanks, than the whole board holds. Only a shuffle helps.
+  function deadBoard(g) {
+    const have = {};
+    for (const el of g.v) have[el] = (have[el] || 0) + 1;
+    return lineKeys(g.n).every((k) => {
+      const m = MOL[targetOf(g, k)];
+      return (have[BLANK] || 0) < g.n - m.size || Object.entries(m.atoms).some(([el, c]) => (have[el] || 0) < c);
+    });
+  }
+
   // Swap two tiles and resolve every completed line, including chains set off
   // by the replacement atoms.
   function applySwap(g, a, b) {
@@ -478,7 +489,7 @@
     g.best = Math.max(g.best, count);
     g.log += String(Math.min(count, 3));
     for (const id of made) g.made[id] = (g.made[id] || 0) + 1;
-    if (g.swaps <= 0) g.done = true;
+    if (g.swaps <= 0 || (g.shuffles <= 0 && deadBoard(g))) g.done = true;
     return { swapped, steps, made, count, points, fresh };
   }
 
@@ -508,7 +519,7 @@
 
   // Test hook: node can load this file with a stub window to check the rules.
   if (typeof window.__chemmoveTest === 'function') {
-    window.__chemmoveTest({ MOLS, MOL, ELEMENTS, BLANK, sizeRange, molsFor, newGame, applySwap, findHint, planFor, solvedLines, lineKeys, targetOf });
+    window.__chemmoveTest({ MOLS, MOL, ELEMENTS, BLANK, sizeRange, molsFor, newGame, applySwap, findHint, deadBoard, planFor, solvedLines, lineKeys, targetOf });
     return;
   }
 
@@ -787,10 +798,16 @@
 
     el.doneBar.hidden = !game.done;
     if (game.done) {
-      el.doneTitle.textContent = p.daily ? 'Daily experiment complete' : 'Out of swaps';
+      el.doneTitle.textContent = p.daily ? 'Daily experiment complete' : game.swaps > 0 ? 'Stuck' : 'Out of swaps';
       el.doneSub.textContent = `${game.score} points · ${plural(game.lines, 'compound')}${p.daily ? ` · next daily in ${untilTomorrow()}` : ''}`;
     }
   }
+
+  // Why the round ended: out of swaps, or a dead board with no shuffles left.
+  function endMsg() {
+    return game.swaps > 0 ? 'No swap can make any compound now, and the shuffles are gone. Round over.' : 'Out of swaps!';
+  }
+  const deadHint = () => (!game.done && game.shuffles > 0 && deadBoard(game) ? ' No swap can make anything on this board: shuffle for a new one.' : '');
 
   function render() {
     renderHeads();
@@ -922,7 +939,7 @@
       renderHud();
       slide(a, b);
       sound('swap');
-      say(game.done ? 'Out of swaps!' : planMsg.trim() || `No reaction yet. ${plural(game.swaps, 'swap')} left.`);
+      say(game.done ? endMsg() : (planMsg.trim() || `No reaction yet. ${plural(game.swaps, 'swap')} left.`) + deadHint());
       if (game.done) finishRound();
       return;
     }
@@ -954,7 +971,7 @@
         const names = res.made.slice(0, first).map((id) => MOL[id].name);
         const where = first === 1 ? ` in ${lineName(res.steps[0][0])}` : '';
         const chain = res.steps.length > 1 ? ` Chain reaction: ${listJoin(res.made.slice(first).map((id) => MOL[id].name))} too.` : '';
-        say(`Made ${listJoin(names)}${where}! +${res.points}.${chain}${game.done ? ' Out of swaps!' : planMsg}`);
+        say(`Made ${listJoin(names)}${where}! +${res.points}.${chain}${game.done ? ` ${endMsg()}` : planMsg + deadHint()}`);
         if (firsts.length) toast(`📓 New in your lab notebook: ${listJoin(firsts.map((id) => `${MOL[id].emoji} ${MOL[id].name}`))}`);
         if (el.tiles.contains(document.activeElement)) focusTile(focusIdx);
         if (game.done) finishRound();
@@ -1001,11 +1018,20 @@
     game.log += 's';
     selected = null;
     game.plan = null;
+    if (game.shuffles <= 0 && deadBoard(game)) {
+      game.done = true;
+      lastFinish = recordResult(game);
+    }
     save();
     render();
     Array.from(tileEls()).forEach((t) => restartAnim(t, 'fresh'));
     sound('shuffle');
-    say(`New board dealt. ${game.shuffles ? `${plural(game.shuffles, 'shuffle')} left.` : 'That was your last shuffle.'}`);
+    if (game.done) {
+      say(endMsg());
+      finishRound();
+      return;
+    }
+    say(`New board dealt. ${game.shuffles ? `${plural(game.shuffles, 'shuffle')} left.` : 'That was your last shuffle.'}${deadHint()}`);
   }
 
   let restartArmed = 0;
@@ -1083,6 +1109,7 @@
     $('#finScore').textContent = String(game.score);
     const bits = [plural(game.lines, 'compound'), `best swap ×${game.best || 0}`];
     if (game.hints) bits.push(plural(game.hints, 'hint'));
+    if (game.swaps > 0) bits.push(`stuck with ${plural(game.swaps, 'swap')} left`);
     $('#finLine').textContent = bits.join(' · ');
     const badge = $('#finBadge');
     const best = store.get('bests', {})[game.n];
