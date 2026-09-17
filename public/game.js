@@ -126,7 +126,7 @@
     ['chloroform', 'Chloroform', '😴', 'CHCl₃', 'An early surgical anaesthetic, long since retired.'],
     ['formic', 'Formic acid', '🐜', 'HCOOH', 'The sting in an ant bite. Its name comes from the Latin for ant.'],
     ['slakedlime', 'Slaked lime', '🪣', 'Ca(OH)₂', 'Calcium hydroxide. Hardens into limestone in old mortar.'],
-    ['saltpeter', 'Saltpeter', '🎆', 'KNO₃', 'Potassium nitrate. The oxidiser in gunpowder.'],
+    ['saltpeter', 'Saltpeter', '🍖', 'KNO₃', 'Potassium nitrate. Cures ham and feeds crops.'],
     ['milkmag', 'Milk of magnesia', '🥛', 'Mg(OH)₂', 'Magnesium hydroxide. A classic antacid.'],
 
     ['ethylene', 'Ethylene', '🍌', 'C₂H₄', 'A plant hormone that makes fruit ripen.'],
@@ -140,7 +140,7 @@
     ['salammoniac', 'Sal ammoniac', '🍬', 'NH₄Cl', 'Ammonium chloride. Salty liquorice gets its bite from it.'],
 
     ['sulfuric', 'Battery acid', '🔋', 'H₂SO₄', 'Sulfuric acid, the most produced industrial chemical on Earth.'],
-    ['methylamine', 'Methylamine', '🦑', 'CH₃NH₂', 'Smells fishy. A building block for many drugs and dyes.'],
+    ['methylamine', 'Methylamine', '🦑', 'CH₃NH₂', 'Smells fishy. Used to make dyes and medicines.'],
     ['acetaldehyde', 'Acetaldehyde', '🤕', 'CH₃CHO', 'What your liver turns alcohol into. A big part of a hangover.'],
     ['sf6', 'Deep-voice gas', '🎤', 'SF₆', 'Sulfur hexafluoride. So dense it makes your voice drop.'],
     ['lodestone', 'Lodestone', '🧲', 'Fe₃O₄', 'Magnetite. Naturally magnetic; the first compasses used it.'],
@@ -154,7 +154,7 @@
 
     ['ethanol', 'Alcohol', '🍺', 'C₂H₅OH', 'Ethanol. Yeast makes it from sugar.'],
     ['propylene', 'Propylene', '🥣', 'C₃H₆', 'Propene. Turned into the plastic of yoghurt pots.'],
-    ['ammoniumnitrate', 'Ammonium nitrate', '🌾', 'NH₄NO₃', 'A common fertiliser, and a powerful oxidiser.'],
+    ['ammoniumnitrate', 'Ammonium nitrate', '🌾', 'NH₄NO₃', 'A common fertiliser that feeds crops worldwide.'],
 
     ['acetone', 'Acetone', '💅', '(CH₃)₂CO', 'Nail polish remover.'],
     ['antifreeze', 'Antifreeze', '🚗', 'C₂H₄(OH)₂', 'Ethylene glycol. Keeps car engines from freezing.'],
